@@ -243,10 +243,34 @@
   grid-column: span 1;
 }
 
+.chart-scroll-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+}
+
+/* Custom scrollbar for charts */
+.chart-scroll-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+
+.chart-scroll-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chart-scroll-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.3);
+  border-radius: 3px;
+}
+
 .chart-container {
   position: relative;
   height: 340px;
   width: 100%;
+}
+
+.chart-wide-inner {
+  min-width: 600px;
 }
 
 /* ─── Waiting Screen ─────────────────────────────────── */

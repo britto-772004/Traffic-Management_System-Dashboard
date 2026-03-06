@@ -6,9 +6,19 @@ import VehicleCountChart from './charts/VehicleCountChart';
 import TotalVehicleTrendChart from './charts/TotalVehicleTrendChart';
 import EmergencyVehicleChart from './charts/EmergencyVehicleChart';
 import TopSignalsChart from './charts/TopSignalsChart';
+import SignalHistoryView from './SignalHistoryView';
 
 const Dashboard: React.FC = () => {
     const { isConnected, currentData } = useSocket();
+    const [signalList, setSignalList] = React.useState<{ id: number; area: string; city: string }[]>([]);
+    const [selectedSignalId, setSelectedSignalId] = React.useState<number | null>(null);
+
+    React.useEffect(() => {
+        fetch('http://localhost:5000/api/signals')
+            .then((res) => res.json())
+            .then((data) => setSignalList(data))
+            .catch((err) => console.error('Failed to load signals', err));
+    }, []);
 
     // Compute summary statistics from the current data
     const stats = useMemo(() => {
@@ -61,6 +71,30 @@ const Dashboard: React.FC = () => {
                 </div>
             </header>
 
+            {/* ─── Signal Selector ───────────────────────────────── */}
+            <div className="signal-selector" style={{ marginBottom: '2rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                <label style={{ fontSize: '0.9rem', color: '#94a3b8' }}>View Signal History:</label>
+                <select
+                    value={selectedSignalId || ''}
+                    onChange={(e) => setSelectedSignalId(e.target.value ? Number(e.target.value) : null)}
+                    style={{
+                        padding: '0.6rem 1rem',
+                        borderRadius: '8px',
+                        background: 'rgba(17, 24, 39, 0.6)',
+                        border: '1px solid rgba(51, 65, 85, 0.4)',
+                        color: '#f1f5f9',
+                        outline: 'none',
+                    }}
+                >
+                    <option value="">-- View All Signals Overview --</option>
+                    {signalList.map((sig) => (
+                        <option key={sig.id} value={sig.id}>
+                            {sig.area} - {sig.city} (Signal #{sig.id})
+                        </option>
+                    ))}
+                </select>
+            </div>
+
             {/* ─── Waiting Screen ───────────────────────────────── */}
             {!currentData && (
                 <div className="waiting-screen">
@@ -88,24 +122,40 @@ const Dashboard: React.FC = () => {
                 </div>
             )}
 
-            {/* ─── Charts Grid ──────────────────────────────────── */}
-            {currentData && (
-                <div className="charts-section">
-                    <div className="charts-grid">
-                        <div className="chart-card chart-wide">
-                            <VehicleCountChart signals={currentData.signals} />
-                        </div>
-                        <div className="chart-card chart-wide">
-                            <TotalVehicleTrendChart signals={currentData.signals} />
-                        </div>
-                        <div className="chart-card">
-                            <EmergencyVehicleChart signals={currentData.signals} />
-                        </div>
-                        <div className="chart-card">
-                            <TopSignalsChart signals={currentData.signals} />
+            {/* ─── Specific Signal History ──────────────────────── */}
+            {selectedSignalId ? (
+                <SignalHistoryView
+                    signalId={selectedSignalId}
+                    onClose={() => setSelectedSignalId(null)}
+                />
+            ) : (
+                /* ─── Charts Grid (Overview) ───────────────────────── */
+                currentData && (
+                    <div className="charts-section">
+                        <div className="charts-grid">
+                            <div className="chart-card chart-wide">
+                                <div className="chart-scroll-wrapper">
+                                    <div className="chart-container chart-wide-inner">
+                                        <VehicleCountChart signals={currentData.signals} />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="chart-card chart-wide">
+                                <div className="chart-scroll-wrapper">
+                                    <div className="chart-container chart-wide-inner">
+                                        <TotalVehicleTrendChart signals={currentData.signals} />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="chart-card">
+                                <EmergencyVehicleChart signals={currentData.signals} />
+                            </div>
+                            <div className="chart-card">
+                                <TopSignalsChart signals={currentData.signals} />
+                            </div>
                         </div>
                     </div>
-                </div>
+                )
             )}
 
             {/* ─── Footer ───────────────────────────────────────── */}
