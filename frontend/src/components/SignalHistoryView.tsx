@@ -16,9 +16,10 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 interface SignalHistoryProps {
     signalId: number;
     onClose: () => void;
+    isDarkTheme: boolean;
 }
 
-const SignalHistoryView: React.FC<SignalHistoryProps> = ({ signalId, onClose }) => {
+const SignalHistoryView: React.FC<SignalHistoryProps> = ({ signalId, onClose, isDarkTheme }) => {
     const [history, setHistory] = useState<TrafficSignalData[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -104,26 +105,31 @@ const SignalHistoryView: React.FC<SignalHistoryProps> = ({ signalId, onClose }) 
         ],
     };
 
+    const textColor = isDarkTheme ? '#e2e8f0' : '#0f172a';
+    const gridColor = isDarkTheme ? 'rgba(51, 65, 85, 0.3)' : 'rgba(203, 213, 225, 0.6)';
+    const tooltipBg = isDarkTheme ? 'rgba(15, 23, 42, 0.9)' : 'rgba(255, 255, 255, 0.9)';
+    const tooltipText = isDarkTheme ? '#e2e8f0' : '#0f172a';
+
     const options = {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
             legend: {
                 position: 'top' as const,
-                labels: { color: '#94a3b8', font: { size: 11 } }
+                labels: { color: textColor, font: { size: 11 } }
             },
             title: {
                 display: true,
                 text: `Traffic Composition for ${signalName}`,
-                color: '#e2e8f0',
+                color: textColor,
                 font: { size: 16, weight: 'bold' as any },
             },
             tooltip: {
                 mode: 'index' as const,
                 intersect: false,
-                backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                titleColor: '#e2e8f0',
-                bodyColor: '#94a3b8',
+                backgroundColor: tooltipBg,
+                titleColor: tooltipText,
+                bodyColor: textColor,
                 borderColor: 'rgba(99, 102, 241, 0.3)',
                 borderWidth: 1,
             }
@@ -131,13 +137,13 @@ const SignalHistoryView: React.FC<SignalHistoryProps> = ({ signalId, onClose }) 
         scales: {
             x: {
                 stacked: true,
-                ticks: { color: '#64748b' },
-                grid: { color: 'rgba(51, 65, 85, 0.3)' }
+                ticks: { color: textColor },
+                grid: { color: gridColor }
             },
             y: {
                 stacked: true,
-                ticks: { color: '#64748b' },
-                grid: { color: 'rgba(51, 65, 85, 0.3)' }
+                ticks: { color: textColor },
+                grid: { color: gridColor }
             },
         },
     };

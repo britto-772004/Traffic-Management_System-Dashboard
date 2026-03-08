@@ -12,6 +12,11 @@ const Dashboard: React.FC = () => {
     const { isConnected, currentData } = useSocket();
     const [signalList, setSignalList] = React.useState<{ id: number; area: string; city: string }[]>([]);
     const [selectedSignalId, setSelectedSignalId] = React.useState<number | null>(null);
+    const [isDarkTheme, setIsDarkTheme] = React.useState<boolean>(true);
+
+    React.useEffect(() => {
+        document.documentElement.setAttribute('data-theme', isDarkTheme ? 'dark' : 'light');
+    }, [isDarkTheme]);
 
     React.useEffect(() => {
         fetch('http://localhost:5000/api/signals')
@@ -63,6 +68,23 @@ const Dashboard: React.FC = () => {
                     </div>
                 </div>
                 <div className="header-right">
+                    <button
+                        onClick={() => setIsDarkTheme(!isDarkTheme)}
+                        style={{
+                            background: 'transparent',
+                            border: '1px solid var(--border-subtle)',
+                            padding: '0.5rem 0.8rem',
+                            borderRadius: '8px',
+                            color: 'var(--text-primary)',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                            fontSize: '0.9rem'
+                        }}
+                    >
+                        {isDarkTheme ? '☀️ Light Mode' : '🌙 Dark Mode'}
+                    </button>
                     <div className="last-updated">
                         <span className="update-label">Last Updated</span>
                         <span className="update-time">{lastUpdated}</span>
@@ -73,16 +95,16 @@ const Dashboard: React.FC = () => {
 
             {/* ─── Signal Selector ───────────────────────────────── */}
             <div className="signal-selector" style={{ marginBottom: '2rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                <label style={{ fontSize: '0.9rem', color: '#94a3b8' }}>View Signal History:</label>
+                <label style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>View Signal History:</label>
                 <select
                     value={selectedSignalId || ''}
                     onChange={(e) => setSelectedSignalId(e.target.value ? Number(e.target.value) : null)}
                     style={{
                         padding: '0.6rem 1rem',
                         borderRadius: '8px',
-                        background: 'rgba(17, 24, 39, 0.6)',
-                        border: '1px solid rgba(51, 65, 85, 0.4)',
-                        color: '#f1f5f9',
+                        background: 'var(--bg-card)',
+                        border: '1px solid var(--border-subtle)',
+                        color: 'var(--text-primary)',
                         outline: 'none',
                     }}
                 >
@@ -127,6 +149,7 @@ const Dashboard: React.FC = () => {
                 <SignalHistoryView
                     signalId={selectedSignalId}
                     onClose={() => setSelectedSignalId(null)}
+                    isDarkTheme={isDarkTheme}
                 />
             ) : (
                 /* ─── Charts Grid (Overview) ───────────────────────── */
@@ -136,22 +159,22 @@ const Dashboard: React.FC = () => {
                             <div className="chart-card chart-wide">
                                 <div className="chart-scroll-wrapper">
                                     <div className="chart-container chart-wide-inner">
-                                        <VehicleCountChart signals={currentData.signals} />
+                                        <VehicleCountChart signals={currentData.signals} isDarkTheme={isDarkTheme} />
                                     </div>
                                 </div>
                             </div>
                             <div className="chart-card chart-wide">
                                 <div className="chart-scroll-wrapper">
                                     <div className="chart-container chart-wide-inner">
-                                        <TotalVehicleTrendChart signals={currentData.signals} />
+                                        <TotalVehicleTrendChart signals={currentData.signals} isDarkTheme={isDarkTheme} />
                                     </div>
                                 </div>
                             </div>
                             <div className="chart-card">
-                                <EmergencyVehicleChart signals={currentData.signals} />
+                                <EmergencyVehicleChart signals={currentData.signals} isDarkTheme={isDarkTheme} />
                             </div>
                             <div className="chart-card">
-                                <TopSignalsChart signals={currentData.signals} />
+                                <TopSignalsChart signals={currentData.signals} isDarkTheme={isDarkTheme} />
                             </div>
                         </div>
                     </div>

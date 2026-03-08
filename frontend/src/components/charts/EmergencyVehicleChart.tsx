@@ -12,9 +12,10 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 interface EmergencyVehicleChartProps {
     signals: TrafficSignalData[];
+    isDarkTheme: boolean;
 }
 
-const EmergencyVehicleChart: React.FC<EmergencyVehicleChartProps> = ({ signals }) => {
+const EmergencyVehicleChart: React.FC<EmergencyVehicleChartProps> = ({ signals, isDarkTheme }) => {
     const totalAmbulance = signals.reduce((sum, s) => sum + s.emergencyVehicleCrossedCount.ambulance, 0);
     const totalFire = signals.reduce((sum, s) => sum + s.emergencyVehicleCrossedCount.fireServiceVehicle, 0);
     const totalVIP = signals.reduce((sum, s) => sum + s.emergencyVehicleCrossedCount.vipVehicle, 0);
@@ -41,6 +42,11 @@ const EmergencyVehicleChart: React.FC<EmergencyVehicleChartProps> = ({ signals }
         ],
     };
 
+    const textColor = isDarkTheme ? '#e2e8f0' : '#0f172a';
+    const tooltipBg = isDarkTheme ? 'rgba(15, 23, 42, 0.9)' : 'rgba(255, 255, 255, 0.9)';
+    const tooltipText = isDarkTheme ? '#e2e8f0' : '#0f172a';
+    const tooltipBodyLabel = isDarkTheme ? '#94a3b8' : '#475569';
+
     const options = {
         responsive: true,
         maintainAspectRatio: false,
@@ -49,19 +55,19 @@ const EmergencyVehicleChart: React.FC<EmergencyVehicleChartProps> = ({ signals }
         plugins: {
             legend: {
                 position: 'bottom' as const,
-                labels: { color: '#94a3b8', font: { size: 12 }, padding: 20, usePointStyle: true, pointStyle: 'circle' },
+                labels: { color: tooltipBodyLabel, font: { size: 12 }, padding: 20, usePointStyle: true, pointStyle: 'circle' },
             },
             title: {
                 display: true,
                 text: 'Emergency Vehicles',
-                color: '#e2e8f0',
+                color: textColor,
                 font: { size: 15, weight: 600 as const },
                 padding: { bottom: 15 },
             },
             tooltip: {
-                backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                titleColor: '#e2e8f0',
-                bodyColor: '#94a3b8',
+                backgroundColor: tooltipBg,
+                titleColor: tooltipText,
+                bodyColor: tooltipBodyLabel,
                 borderColor: 'rgba(239, 68, 68, 0.3)',
                 borderWidth: 1,
                 cornerRadius: 8,

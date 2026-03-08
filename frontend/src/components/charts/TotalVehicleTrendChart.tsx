@@ -17,9 +17,10 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, T
 
 interface TotalVehicleTrendChartProps {
     signals: TrafficSignalData[];
+    isDarkTheme: boolean;
 }
 
-const TotalVehicleTrendChart: React.FC<TotalVehicleTrendChartProps> = ({ signals }) => {
+const TotalVehicleTrendChart: React.FC<TotalVehicleTrendChartProps> = ({ signals, isDarkTheme }) => {
     const labels = signals.map((s) => s.trafficSignalLocation.area);
     const totals = signals.map(
         (s) =>
@@ -28,6 +29,13 @@ const TotalVehicleTrendChart: React.FC<TotalVehicleTrendChartProps> = ({ signals
             s.vehicleCrossedCount.bus +
             s.vehicleCrossedCount.truck
     );
+
+    const textColor = isDarkTheme ? '#e2e8f0' : '#0f172a';
+    const gridColor = isDarkTheme ? 'rgba(51, 65, 85, 0.3)' : 'rgba(203, 213, 225, 0.6)';
+    const tooltipBg = isDarkTheme ? 'rgba(15, 23, 42, 0.9)' : 'rgba(255, 255, 255, 0.9)';
+    const tooltipText = isDarkTheme ? '#e2e8f0' : '#0f172a';
+    const tooltipBodyLabel = isDarkTheme ? '#94a3b8' : '#475569';
+    const pointBg = isDarkTheme ? '#1e293b' : '#ffffff';
 
     const data = {
         labels,
@@ -46,7 +54,7 @@ const TotalVehicleTrendChart: React.FC<TotalVehicleTrendChartProps> = ({ signals
                 fill: true,
                 tension: 0.4,
                 pointBackgroundColor: 'rgb(99, 102, 241)',
-                pointBorderColor: '#1e293b',
+                pointBorderColor: pointBg,
                 pointBorderWidth: 2,
                 pointRadius: 4,
                 pointHoverRadius: 7,
@@ -62,19 +70,19 @@ const TotalVehicleTrendChart: React.FC<TotalVehicleTrendChartProps> = ({ signals
         plugins: {
             legend: {
                 position: 'top' as const,
-                labels: { color: '#94a3b8', font: { size: 11 }, padding: 15, usePointStyle: true, pointStyle: 'circle' },
+                labels: { color: tooltipBodyLabel, font: { size: 11 }, padding: 15, usePointStyle: true, pointStyle: 'circle' },
             },
             title: {
                 display: true,
                 text: 'Total Vehicles per Signal Area',
-                color: '#e2e8f0',
+                color: textColor,
                 font: { size: 15, weight: 600 as const },
                 padding: { bottom: 15 },
             },
             tooltip: {
-                backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                titleColor: '#e2e8f0',
-                bodyColor: '#94a3b8',
+                backgroundColor: tooltipBg,
+                titleColor: tooltipText,
+                bodyColor: tooltipBodyLabel,
                 borderColor: 'rgba(99, 102, 241, 0.3)',
                 borderWidth: 1,
                 cornerRadius: 8,
@@ -83,12 +91,12 @@ const TotalVehicleTrendChart: React.FC<TotalVehicleTrendChartProps> = ({ signals
         },
         scales: {
             x: {
-                ticks: { color: '#64748b', font: { size: 10 }, maxRotation: 45 },
-                grid: { color: 'rgba(51, 65, 85, 0.3)' },
+                ticks: { color: tooltipBodyLabel, font: { size: 10 }, maxRotation: 45 },
+                grid: { color: gridColor },
             },
             y: {
-                ticks: { color: '#64748b', font: { size: 11 } },
-                grid: { color: 'rgba(51, 65, 85, 0.3)' },
+                ticks: { color: tooltipBodyLabel, font: { size: 11 } },
+                grid: { color: gridColor },
             },
         },
     };
